@@ -1,0 +1,37 @@
+<div class="mt-4">
+    <form method="post" action="./{{this._id}}?_method=PUT" >
+        <h1>Chỉnh sửa món ăn</h1>
+        <div class="mb-3 mt-4">
+            <label for="name" class="form-label">Tên món</label>
+            <input type="text" class="form-control" id="name" value="{{menu.name}}" name="name">
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Mô tả</label>
+            <textarea class="form-control" id="description"  name="description">{{menu.description}}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="price">Giá tiền</label>
+            <input type="number" class="form-control" id="price" name="price" value="{{menu.price}}" step="1000">
+        </div>
+        <div class="mb-3">
+            <select name="status" id="status" class="form-select" data-stt="{{menu.status}}">
+                <option value="new">Món mới</option>
+                <option value="hot">Món bán chạy</option>
+                <option value="soldout">Món đã hết bán</option>
+                <option value="normal">Bình thường</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<script>
+    var statusMenu = document.querySelector('select[name="status"]').getAttribute('data-stt')
+    var optionMenu = document.querySelectorAll('#status option')
+    optionMenu.forEach(opt=>{
+        var valueOpt = opt.value
+        if (valueOpt === statusMenu){
+            opt.selected = true
+        }
+    })
+</script>

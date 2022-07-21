@@ -1,0 +1,55 @@
+<div class="mt-4">
+        <form action="/menu" method="get" class="d-flex">
+            <input class="form-control me-2" name="search" type="search" placeholder="Tìm kiếm món ăn" style="width:300px" >
+            <button class="btn btn-outline-success" type="submit">Tìm</button>
+        </form>
+
+    <div class="row">
+        {{#each menus}}
+            <div class="col-sm-12 col-md-6 col-lg-4 mt-4">
+                <div class="card" style="width: 18rem;">
+                <img src="data:image/png;base64,{{this.image.data}}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">{{this.name}} <span class="badge" data-stt="{{this.status}}"></span></h5> 
+                        <p class="card-text">{{this.description}}</p>
+                        <p class="card-text">{{this.price}}</p>
+                        <button class="btn btn-primary float-end orderBtn" data-id="{{this._id}}" >Đặt món </button>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</div>
+
+<script>
+    var image = document.querySelector
+    var badges = document.querySelectorAll('.badge')
+    badges.forEach(badge =>{
+        var dataStt = badge.getAttribute('data-stt')
+        switch(dataStt){
+            case 'hot':
+                badge.classList.add('bg-danger')
+                badge.innerHTML = 'HOT'
+                break
+            case 'new':
+                badge.classList.add('bg-warning')
+                badge.innerHTML = 'NEW'
+                break
+            case 'soldout':
+                badge.classList.add('bg-secondary')
+                badge.innerHTML = 'Ngừng bán'
+                badge.parentElement.parentElement.querySelector('.orderBtn').disabled = true
+                break
+            default:
+                badge.innerHTML = ''
+        }   
+    })
+
+    var orderBtn = document.querySelectorAll('.orderBtn:not([disabled])')
+    orderBtn.forEach(btn=>{
+        btn.onclick = (e) =>{
+            var id = btn.getAttribute('data-id')
+            location.href = '/order/'+id
+        }
+    })
+</script>

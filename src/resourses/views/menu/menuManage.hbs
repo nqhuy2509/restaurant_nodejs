@@ -1,0 +1,74 @@
+<div class="mt-4">
+    <a role="button" class="btn btn-success me-4" href="/menu/create">Thêm món mới</a>
+    <a role="button" class="btn btn-info" href="/menu/">Xem thực đơn</a>
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Món ăn</th>
+                <th scope="col">Giá</th>
+                <th scope="col">Trạng thái</th>
+                <th scope="col">Ngày tạo</th>
+                <th scope="col">Tùy chọn</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each menus}}
+            <tr>
+                <th scope="row">{{sum @index 1}}</th>
+                <td>{{this.name}}</td>
+                <td>{{this.price}}</td> 
+                <td>{{this.status}}</td>
+                <td>{{formatDay this.createdAt}}</td>
+                <td>
+                    <a role="button" href="/menu/{{this._id}}/edit" class="btn btn-warning me-4">Chỉnh sửa</a>
+                    <a role="button" href="/menu/upimg/{{this._id}}/edit" class="btn btn-info me-4">Thay ảnh</a>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteMenu" data-id="{{this._id}}">Xóa</button>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+
+{{!-- Modal button delete --}}
+<div class="modal fade" id="deleteMenu" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Xóa món ăn</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn xóa món ăn này ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Hủy</button>
+        <button type="button" class="btn btn-danger" id="deleteBtn">Xóa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- Hiddent form delete Menu --}}
+<form action="" method="post" id="deleteForm">
+
+</form>
+
+{{!-- Handle delete btn --}}
+<script>
+    var deleteModal = document.getElementById('deleteMenu')
+    var deleteBtn = document.getElementById('deleteBtn')
+    var deleteForm = document.getElementById('deleteForm')
+    var idMenu 
+    deleteModal.addEventListener('show.bs.modal', function(event){
+        var button = event.relatedTarget 
+        var id = button.getAttribute('data-id')
+        idMenu = id
+    })
+    deleteBtn.onclick = (e) =>{
+        deleteForm.action = '/menu/'+idMenu+'?_method=DELETE'
+        deleteForm.submit()
+    }
+</script>

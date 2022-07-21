@@ -1,0 +1,17 @@
+<div class="mt-4">
+    <form method="post" action="./{{this.id}}?_method=PUT" enctype="multipart/form-data">
+        <h1>Tải mới hình ảnh món ăn</h1>
+        <h3>Hình ảnh hiện tại</h3>
+        <div class="card mt-4" style="width: 18rem;">
+                <img src="data:image/png;base64,{{menu.image.data}}" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">{{menu.name}}</h5>
+                </div>
+        </div>
+        <div class="mb-3 mt-4">
+                <label for="image" class="form-label">Tải ảnh lên</label>
+                <input type="file" class="form-control" id="image" accept="image/*" name="image">
+        </div>
+    <button type="submit" class="btn btn-primary">Tải lên</button>
+    </form>
+</div>

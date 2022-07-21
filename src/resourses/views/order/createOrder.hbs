@@ -1,0 +1,192 @@
+<div class="mt-4">
+    <form method="post" action="/order/upload">
+        <h1>Đặt món</h1>
+        <div class="mb-3">
+            <label for="name" class="form-label">Họ và tên</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Vui lòng nhập đầy đủ họ và tên" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Địa chỉ</label>
+            <input class="" list="provinceList" name="province" id="province" placeholder="Tỉnh...">
+            <datalist id="provinceList">
+
+            </datalist>
+
+            <input class="" list="districtList" name="district" id="district" placeholder="Quận / Huyện">
+            <datalist id="districtList">
+
+            </datalist>
+
+            <input class="" list="wardList" name="ward" id="ward" placeholder="Phường / Xã">
+            <datalist id="wardList">
+
+            </datalist>
+           
+        </div>
+        <div class="mb-3">
+            <label for="street" class="form-label">Số nhà, tên đường</label>
+            <input type="text" class="form-control" id="street" name="street" placeholder="Vui lòng nhập số nhà, tên đường" required>
+        </div>
+        <div class="mb-3">
+            <label for="phone" class="form-label">Số điện thoại</label>
+            <input type="text" class="form-control" id="phone" name="phone" placeholder="Vui lòng nhập số điện thoại đặt hàng" required>
+        </div>
+        <div class="mb-3 ">
+            <select name="menu" id="menu" class="form-select">
+                <option disabled selected data-price="0"> --Chọn món ăn-- </option>
+                {{#each menus}}
+                    <option value="{{this.name}}" data-price="{{this.price}}">{{this.name}} - {{this.price}} VND</option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="amount" class="form-label">Số lượng</label>
+            <input type="number" class="form-control" id="amount" name="amount" value="1" min="1" required>
+            <div class="form-text amount-invalid" style="color: red; display: none;">* Số lượng không đúng định dạng</div>
+        </div>
+        <div class="mb-3">
+            <label for="note" class="form-label">Ghi chú</label>
+            <textarea  class="form-control" id="address" name="note"></textarea>
+        </div>
+        <input type="number" name="price" value="1" class="price" hidden>
+        <div class="mb-3">
+            <h3>Tổng giá tiền: <span class="total-price"></span></h3>
+        </div>
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" value="" id="invalidCheck">
+            <label class="form-check-label" for="invalidCheck">
+                Tôi đã đọc kĩ các thông tin và đặt món
+            </label>
+        </div>
+        <button type="submit" class="btn btn-success" disabled>Đặt món</button>
+    </form>
+</div>
+
+<script type="module">
+    import formatVND from './js/currency.js'
+
+    // fetch api provinces viet nam
+    var apiVN = 'https://provinces.open-api.vn/api/?depth=3'
+    var listProvince = document.getElementById('provinceList')
+    var provinceField = document.getElementById('province')
+    var districtField = document.getElementById('district')
+    var wardField = document.getElementById('ward')
+    var provinceNow
+    var districtNow
+    fetch(apiVN)
+    .then(data=>{
+        return data.json()
+    })
+    .then((provinces) => {
+        var provincesListHTML = ''
+        provinces.forEach(opt=>{
+            provincesListHTML += `<option value="${opt.name}">`
+        })
+        listProvince.innerHTML = provincesListHTML
+    })
+
+    provinceField.onfocus = (e) =>{
+        e.target.value = ''
+    }
+
+    // fetch api districts viet nam
+    
+    var listDistricts = document.getElementById('districtList')
+    fetch(apiVN)
+    .then(data=>{
+        return data.json()
+    })
+    .then((provinces) => {
+        provinceField.onchange = (e) =>{
+            districtField.value = ''
+            wardField.value= ''
+            var districtListHTML = ''
+            provinceNow = provinces.find(prov => prov.name == e.target.value)
+            provinceNow.districts.forEach(opt=>{
+                districtListHTML += `<option value="${opt.name}">`
+            })
+            listDistricts.innerHTML = districtListHTML
+        }
+    })
+
+    districtField.onfocus = (e) =>{
+        e.target.value = ''
+    }
+
+    // fetch api wards viet nam
+    var listWard = document.getElementById('wardList')
+    fetch(apiVN)
+    .then(data=>{
+        return data.json()
+    })
+    .then((provinces) => {
+        districtField.onchange = (e) =>{
+            wardField.value = ''
+            var wardListHTML = ''
+            var districtNow = provinceNow.districts.find(dist => dist.name == e.target.value)
+            districtNow.wards.forEach(opt=>{
+                wardListHTML += `<option value="${opt.name}">`
+            })
+            listWard.innerHTML = wardListHTML
+        }
+    })
+
+    wardField.onfocus = (e) =>{
+        e.target.value = ''
+    }
+
+    // Caculated total bill
+    var amountText = document.querySelector('input[name="amount"]')
+    var menuSelected = document.querySelector('#menu')
+    var totalPanel = document.querySelector('.total-price')
+    var priceInput = document.querySelector('.price')
+    menuSelected.onchange = (e) =>{
+       var itemPrice = menuSelected.querySelector('option:checked').getAttribute('data-price')
+       var totalPrice = Number.parseInt(itemPrice) * Number.parseInt(amountText.value)
+       if(totalPrice){
+            totalPanel.innerHTML = formatVND(totalPrice)
+            priceInput.value = totalPrice
+       }
+       else{
+           totalPanel.innerHTML =''
+       }
+    }
+
+    
+    // Check amount and calculate total bill
+    var amountInvalid = document.querySelector('.amount-invalid')
+    amountText.oninput = (e) => {
+        if(amountText.value < 1){
+            amountInvalid.style.display = 'block'
+        }
+        else{
+            amountInvalid.style.display = 'none'
+        }
+        var itemPrice = menuSelected.querySelector('option:checked').getAttribute('data-price')
+        var totalPrice = Number.parseInt(itemPrice) * Number.parseInt(amountText.value)
+        totalPanel.innerHTML = formatVND(totalPrice)
+        if(totalPrice){
+            totalPanel.innerHTML = formatVND(totalPrice)
+            priceInput.value = totalPrice
+       }
+       else{
+           totalPanel.innerHTML =''
+       }
+    }
+
+    
+
+    //Check submit
+    var checkBtn = document.getElementById('invalidCheck')
+    var submitBtn = document.querySelector('button[type="submit"]')
+    var formOrder = document.querySelector('form')
+    checkBtn.onchange = (e)=>{
+        if(checkBtn.checked){
+            submitBtn.disabled = false
+        }
+        else{
+            submitBtn.disabled = true
+        }
+    }
+    
+</script>

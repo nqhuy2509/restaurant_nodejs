@@ -1,0 +1,18 @@
+<style>
+    h1{
+        color: red;
+    }
+</style>
+
+<div class="mt-4">
+    <h1>Chi tiết đơn hàng</h1>
+
+    <p><b>Tên khách hàng: </b>{{order.name}}</p>
+    <p><b>Số điện thoại: </b>{{order.phone}}</p>
+    <p><b>Địa chỉ: </b>{{order.street}}, {{order.ward}}, {{order.district}}, {{order.province}}</p>
+    <p><b>Tên món: </b>{{order.menu}}</p>
+    <p><b>Số lượng: </b>{{order.amount}}</p>
+    <p><b>Ghi chú: </b>{{order.note}}</p>
+    <p><b>Thời gian đặt: </b>{{formatDay order.createdAt}}</p>
+    <a href="/order/manage" role="button" class="btn btn-warning">Quay lại</a>
+</div>
